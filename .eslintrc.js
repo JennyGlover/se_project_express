@@ -23,6 +23,6 @@ module.exports = {
   },
   rules: {
     // Allow _id variable names
-    "no-underscore-dangle": ["error", { allow: ["_id"] }]
+    "no-underscore-dangle": ["error", { allow: ["_id"] }],
   },
 };
