@@ -1,8 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const userRoutes = require("./routes/users");
-const clothingItemRoutes = require("./routes/clothingitems");
+const routes = require("./routes");
+const { NOT_FOUND } = require("./utils/errors");
 
 const app = express();
 
@@ -18,10 +18,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// routes for users and clothing items
-app.use("/users", userRoutes);
-app.use("/items", clothingItemRoutes);
+// Centralized routes
+app.use(routes);
 
+// Middleware for handling unknown route
+app.use((req, res) => {
+  res.status(NOT_FOUND).send({ message: "Requested resource not found" });
+});
 
 // Database connection
 mongoose

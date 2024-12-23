@@ -1,19 +1,21 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const User = require("../models/users");
 const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST } = require('../utils/errors');
+const { BAD_REQUEST } = require("../utils/errors");
 
 // controller that gets all users
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({
-      message: "users retrieved successfully",
-      data: users.map((user) => ({
-        _id: user._id.toString(),
-        name: user.name,
-        avatar: user.avatar
-      }))
-    }))
+    .then((users) =>
+      res.status(200).send({
+        message: "users retrieved successfully",
+        data: users.map((user) => ({
+          _id: user._id.toString(),
+          name: user.name,
+          avatar: user.avatar,
+        })),
+      })
+    )
     .catch((err) => handleError(err, res));
 };
 
@@ -34,7 +36,7 @@ module.exports.getUser = (req, res) => {
           _id: user._id.toString(),
           name: user.name,
           avatar: user.avatar,
-        }
+        },
       });
     })
     .catch((err) => handleError(err, res));
@@ -47,15 +49,17 @@ module.exports.createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
   }
   return User.create({ name, avatar })
-    .then((user) => res.status(201).send({
-      message: 'user created',
-      data: {
-        formData: {
-          name: user.name,
-          avatar: user.avatar,
+    .then((user) =>
+      res.status(201).send({
+        message: "user created",
+        data: {
+          formData: {
+            name: user.name,
+            avatar: user.avatar,
+          },
+          _id: user._id,
         },
-        _id: user._id,
-      },
-    }))
+      })
+    )
     .catch((err) => handleError(err, res));
 };

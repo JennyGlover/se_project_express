@@ -1,41 +1,47 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingitems");
 const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST } = require('../utils/errors');
+const { BAD_REQUEST } = require("../utils/errors");
 
 // controller that gets all clothing items
 module.exports.getItems = (req, res) => {
   ClothingItem.find({})
     .populate("owner")
-    .then((clothingItems) => res.status(200).send({
-      message: "Clothing items retrieved successfully", data: clothingItems.map(clothingItem => ({
-        name: clothingItem.name,
-        weather: clothingItem.weather,
-        imageUrl: clothingItem.imageUrl,
-        owner: clothingItem.owner,
-        _id: clothingItem._id,
-      }))
-    }))
+    .then((clothingItems) =>
+      res.status(200).send({
+        message: "Clothing items retrieved successfully",
+        data: clothingItems.map((clothingItem) => ({
+          name: clothingItem.name,
+          weather: clothingItem.weather,
+          imageUrl: clothingItem.imageUrl,
+          owner: clothingItem.owner,
+          _id: clothingItem._id,
+        })),
+      })
+    )
     .catch((err) => handleError(err, res));
 };
 
 module.exports.createItem = (req, res) => {
-  const { name, weather, imageUrl, owner } = req.body;
+  const { name, weather, imageUrl } = req.body;
 
-  if (!name || !weather || !imageUrl || !owner) {
+  if (!name || !weather || !imageUrl) {
     return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
   }
 
-  return ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((clothingItem) => res.status(201).send({
-      message: 'Clothing Item created', data: {
-        name: clothingItem.name,
-        weather: clothingItem.weather,
-        imageUrl: clothingItem.imageUrl,
-        owner: clothingItem.owner,
-        _id: clothingItem._id,
-      }
-    }))
+  return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+    .then((clothingItem) =>
+      res.status(201).send({
+        message: "Clothing Item created",
+        data: {
+          name: clothingItem.name,
+          weather: clothingItem.weather,
+          imageUrl: clothingItem.imageUrl,
+          owner: clothingItem.owner,
+          _id: clothingItem._id,
+        },
+      })
+    )
     .catch((err) => handleError(err, res));
 };
 
@@ -83,7 +89,7 @@ module.exports.putLike = (req, res) => {
           owner: clothingItem.owner,
           _id: clothingItem._id,
           likes: clothingItem.likes,
-        }
+        },
       });
     })
     .catch((err) => handleError(err, res));

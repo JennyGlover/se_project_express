@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { BAD_REQUEST } = require("../utils/errors");
 
 const {
   getItems,
@@ -15,12 +14,5 @@ router.post("/", createItem);
 router.delete("/:itemId", deleteItem);
 router.put("/:itemId/likes", putLike);
 router.delete("/:itemId/likes", deleteLike);
-
-// Handling non-existent routes for /items
-router.use((req, res) => {
-  res
-    .status(BAD_REQUEST)
-    .send({ message: "Requested resource not found for items" });
-});
 
 module.exports = router;
