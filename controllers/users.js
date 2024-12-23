@@ -7,8 +7,9 @@ const { BAD_REQUEST } = require('../utils/errors');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send({
-      message: "users retrieved successfully", data: users.map(user => ({
-        _id: user._id,
+      message: "users retrieved successfully",
+      data: users.map((user) => ({
+        _id: user._id.toString(),
         name: user.name,
         avatar: user.avatar
       }))
@@ -25,15 +26,14 @@ module.exports.getUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: "Invalid itemId format" });
   }
 
-
   return User.findById(userId)
     .orFail(new Error("User not found"))
     .then((user) => {
-      res.send({
+      res.status(200).send({
         data: {
+          _id: user._id.toString(),
           name: user.name,
           avatar: user.avatar,
-          _id: user._id,
         }
       });
     })
@@ -48,9 +48,12 @@ module.exports.createUser = (req, res) => {
   }
   return User.create({ name, avatar })
     .then((user) => res.status(201).send({
-      message: 'user created', data: {
-        name: user.name,
-        avatar: user.avatar,
+      message: 'user created',
+      data: {
+        formData: {
+          name: user.name,
+          avatar: user.avatar,
+        },
         _id: user._id,
       },
     }))
