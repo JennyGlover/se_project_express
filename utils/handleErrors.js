@@ -1,4 +1,4 @@
-const { BAD_REQUEST, INTERNAL_SERVER_ERROR } = require("./errors");
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require("./errors");
 
 // Error handling utility function
 const handleError = (err, res) => {
@@ -16,7 +16,10 @@ const handleError = (err, res) => {
       .status(BAD_REQUEST)
       .send({ message: `Duplicate key error: ${err.message}` });
   }
-
+  // handling non-existent resources
+  if (err.message === 'Item not found') {
+    return res.status(NOT_FOUND).send({ message: "Item not found" });
+  }
   // Handle other errors
   return res
     .status(INTERNAL_SERVER_ERROR)
