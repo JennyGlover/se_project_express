@@ -7,11 +7,18 @@ const { BAD_REQUEST } = require('../utils/errors');
 module.exports.getItems = (req, res) => {
   ClothingItem.find({})
     .populate("owner")
-    .then((clothingItems) => res.status(200).send({ message: "Clothing items retrieved successfully", data: clothingItems }))
+    .then((clothingItems) => res.status(200).send({
+      message: "Clothing items retrieved successfully", data: clothingItems.map(clothingItem => ({
+        name: clothingItem.name,
+        weather: clothingItem.weather,
+        imageUrl: clothingItem.imageUrl,
+        owner: clothingItem.owner,
+        _id: clothingItem._id,
+      }))
+    }))
     .catch((err) => handleError(err, res));
 };
 
-// controller that creates a new item
 module.exports.createItem = (req, res) => {
   const { name, weather, imageUrl, owner } = req.body;
 
@@ -20,7 +27,15 @@ module.exports.createItem = (req, res) => {
   }
 
   return ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((clothingItem) => res.status(201).send({ message: 'Clothing Item created', data: clothingItem }))
+    .then((clothingItem) => res.status(201).send({
+      message: 'Clothing Item created', data: {
+        name: clothingItem.name,
+        weather: clothingItem.weather,
+        imageUrl: clothingItem.imageUrl,
+        owner: clothingItem.owner,
+        _id: clothingItem._id,
+      }
+    }))
     .catch((err) => handleError(err, res));
 };
 
@@ -34,7 +49,7 @@ module.exports.deleteItem = (req, res) => {
   }
 
   return ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
+    .orFail(new Error("Item not found"))
     .then(() => {
       res.status(200).send({ message: "Clothing item deleted successfully" });
     })
@@ -57,11 +72,18 @@ module.exports.putLike = (req, res) => {
     },
     { new: true }
   )
-    .orFail()
-    .then((updatedItem) => {
+    .orFail(new Error("Item not found"))
+    .then((clothingItem) => {
       res.status(200).send({
         message: "Clothing item liked successfully",
-        data: updatedItem,
+        data: {
+          name: clothingItem.name,
+          weather: clothingItem.weather,
+          imageUrl: clothingItem.imageUrl,
+          owner: clothingItem.owner,
+          _id: clothingItem._id,
+          likes: clothingItem.likes,
+        }
       });
     })
     .catch((err) => handleError(err, res));
@@ -81,11 +103,18 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(new Error("Clothing item not found")) // Item not found error
-    .then((updatedItem) => {
+    .orFail(new Error("Item not found")) // Item not found error
+    .then((clothingItem) => {
       res.status(200).send({
         message: "Clothing item disliked successfully",
-        data: updatedItem,
+        data: {
+          name: clothingItem.name,
+          weather: clothingItem.weather,
+          imageUrl: clothingItem.imageUrl,
+          owner: clothingItem.owner,
+          _id: clothingItem._id,
+          likes: clothingItem.likes,
+        },
       });
     })
     .catch((err) => handleError(err, res));

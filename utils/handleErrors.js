@@ -20,6 +20,11 @@ const handleError = (err, res) => {
   if (err.message === 'Item not found') {
     return res.status(NOT_FOUND).send({ message: "Item not found" });
   }
+  // Handle user not found errors
+  if (err.message === "User not found") {
+    return res.status(404).send({ message: err.message });
+  }
+
   // Handle other errors
   return res
     .status(INTERNAL_SERVER_ERROR)

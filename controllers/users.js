@@ -6,7 +6,13 @@ const { BAD_REQUEST } = require('../utils/errors');
 // controller that gets all users
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ message: "users retrieved successfully", data: users }))
+    .then((users) => res.status(200).send({
+      message: "users retrieved successfully", data: users.map(user => ({
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar
+      }))
+    }))
     .catch((err) => handleError(err, res));
 };
 
@@ -19,10 +25,17 @@ module.exports.getUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: "Invalid itemId format" });
   }
 
+
   return User.findById(userId)
-    .orFail()
+    .orFail(new Error("User not found"))
     .then((user) => {
-      res.send({ data: user });
+      res.send({
+        data: {
+          name: user.name,
+          avatar: user.avatar,
+          _id: user._id,
+        }
+      });
     })
     .catch((err) => handleError(err, res));
 };
@@ -34,6 +47,12 @@ module.exports.createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
   }
   return User.create({ name, avatar })
-    .then((user) => res.status(201).send({ message: 'user created', data: user }))
+    .then((user) => res.status(201).send({
+      message: 'user created', data: {
+        name: user.name,
+        avatar: user.avatar,
+        _id: user._id,
+      },
+    }))
     .catch((err) => handleError(err, res));
 };
