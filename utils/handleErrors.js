@@ -3,6 +3,7 @@ const {
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
   UNAUTHORIZED,
+  CONFLICT,
 } = require("./errors");
 
 // Error handling utility function
@@ -27,7 +28,7 @@ const handleError = (err, res) => {
   if (err.name === "MongoError" && err.code === 1100) {
     // extracting the field that caused the duplication
     const duplicateField = Object.keys(err.keyValue)[0];
-    return res.status(BAD_REQUEST).send({
+    return res.status(CONFLICT).send({
       message: `Duplicate key error: The ${duplicateField} already exists`,
     });
   }

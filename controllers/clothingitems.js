@@ -23,9 +23,6 @@ module.exports.getItems = (req, res) => {
 };
 
 module.exports.createItem = (req, res) => {
-  if (!req.user) {
-    return res.status(401).send({ message: "User not authenticated" });
-  }
   const { name, weather, imageUrl } = req.body;
 
   if (!name || !weather || !imageUrl) {
@@ -73,11 +70,10 @@ module.exports.deleteItem = (req, res) => {
       }
 
       // If ownership matches, delete the item
-      return ClothingItem.findByIdAndDelete(itemId);
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res.status(200).send({ message: "Clothing item deleted successfully" })
+      );
     })
-    .then(() => res
-        .status(200)
-        .send({ message: "Clothing item deleted successfully" }))
     .catch((err) => handleError(err, res));
 };
 

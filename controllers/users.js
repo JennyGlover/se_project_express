@@ -5,22 +5,6 @@ const handleError = require("../utils/handleErrors");
 const { BAD_REQUEST } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-// controller that gets all users
-module.exports.getUsers = (req, res) => {
-  User.find({})
-    .then((users) =>
-      res.status(200).send({
-        message: "users retrieved successfully",
-        data: users.map((user) => ({
-          _id: user._id.toString(),
-          name: user.name,
-          avatar: user.avatar,
-        })),
-      })
-    )
-    .catch((err) => handleError(err, res));
-};
-
 // controller that gets user by id
 module.exports.getCurrentUser = (req, res) =>
   // Finding the user by ID in req.user object
@@ -54,33 +38,31 @@ module.exports.createUser = (req, res) => {
       }
 
       // Hashing the password after confirming the email is unique
-      return bcrypt.hash(password, 10);
-    })
-    .then((hash) => 
-      // Creating the user only if the email doesn't exist already
-       User.create({
-        name,
-        avatar,
-        email,
-        password: hash,
-      })
-    )
-    .then((user) => {
-      // creating a new object to send in response
-      const userData = {
-        _id: user._id,
-        name: user.name,
-        avatar: user.avatar,
-        email: user.email,
-      };
+      return bcrypt
+        .hash(password, 10)
+        .then((hash) =>
+          // Creating the user only if the email doesn't exist already
+          User.create({
+            name,
+            avatar,
+            email,
+            password: hash,
+          })
+        )
+        .then((newUser) => {
+          // creating a new object to send in response
+          const userData = {
+            _id: newUser._id,
+            name: newUser.name,
+            avatar: newUser.avatar,
+            email: newUser.email,
+          };
 
-      return res.status(201).send({
-        message: "User created successfully",
-        data: {
-          formData: userData,
-          _id: user._id,
-        },
-      });
+          return res.status(201).send({
+            message: "User created successfully",
+            data: userData,
+          });
+        });
     })
     .catch((err) => handleError(err, res));
 };

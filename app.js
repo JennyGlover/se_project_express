@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const routes = require("./routes");
-const { NOT_FOUND } = require("./utils/errors");
 
 const app = express();
 
@@ -15,11 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Centralized routes
 app.use(routes);
-
-// Middleware for handling unknown route
-app.use((req, res) => {
-  res.status(NOT_FOUND).send({ message: "Requested resource not found" });
-});
 
 // Database connection
 mongoose
