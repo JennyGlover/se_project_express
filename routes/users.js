@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const authMiddleware = require("../middlewares/auth");
 
 const {
   login,
@@ -7,10 +8,10 @@ const {
   updateUserProfile,
 } = require("../controllers/users");
 
-//Defining authentication routes
+// Defining authentication routes
 router.post("/signin", login);
 router.post("/signup", createUser);
-router.get("/me", getCurrentUser);
-router.patch("/me", updateUserProfile);
+router.get("/users/me", authMiddleware, getCurrentUser);
+router.patch("/users/me", authMiddleware, updateUserProfile);
 
 module.exports = router;

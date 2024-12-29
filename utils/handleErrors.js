@@ -25,14 +25,14 @@ const handleError = (err, res) => {
 
   // Handling duplicate key errors
   if (err.name === "MongoError" && err.code === 1100) {
-    //extracting the field that caused the duplication
+    // extracting the field that caused the duplication
     const duplicateField = Object.keys(err.keyValue)[0];
     return res.status(BAD_REQUEST).send({
       message: `Duplicate key error: The ${duplicateField} already exists`,
     });
   }
 
-  //Handling unauthorized error
+  // Handling unauthorized error
   if (err.message === "Incorrect email or password") {
     return res.status(UNAUTHORIZED).send({ message: err.message });
   }

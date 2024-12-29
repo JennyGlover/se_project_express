@@ -1,9 +1,8 @@
-const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/users");
 const handleError = require("../utils/handleErrors");
 const { BAD_REQUEST } = require("../utils/errors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 
 // controller that gets all users
@@ -23,9 +22,9 @@ module.exports.getUsers = (req, res) => {
 };
 
 // controller that gets user by id
-module.exports.getCurrentUser = (req, res) => {
-  //Finding the user by ID in req.user object
-  return User.findById(req.user._id)
+module.exports.getCurrentUser = (req, res) =>
+  // Finding the user by ID in req.user object
+  User.findById(req.user._id)
     .orFail(new Error("User not found"))
     .then((user) => {
       res.status(200).send({
@@ -37,7 +36,6 @@ module.exports.getCurrentUser = (req, res) => {
       });
     })
     .catch((err) => handleError(err, res));
-};
 
 // Controller that creates a new user
 module.exports.createUser = (req, res) => {
@@ -47,7 +45,7 @@ module.exports.createUser = (req, res) => {
   }
 
   // Checking if email already exists
-  User.findOne({ email })
+  return User.findOne({ email })
     .then((user) => {
       if (user) {
         return res
@@ -58,26 +56,28 @@ module.exports.createUser = (req, res) => {
       // Hashing the password after confirming the email is unique
       return bcrypt.hash(password, 10);
     })
-    .then((hash) => {
-      // Create the user only if the email doesn't exist already
-      return User.create({
+    .then((hash) => 
+      // Creating the user only if the email doesn't exist already
+       User.create({
         name,
         avatar,
         email,
         password: hash,
-      });
-    })
+      })
+    )
     .then((user) => {
-      delete user.password; // Deleting the password hash before sending the response
+      // creating a new object to send in response
+      const userData = {
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+      };
 
-      res.status(201).send({
+      return res.status(201).send({
         message: "User created successfully",
         data: {
-          formData: {
-            name: user.name,
-            avatar: user.avatar,
-            email: user.email,
-          },
+          formData: userData,
           _id: user._id,
         },
       });
@@ -85,7 +85,7 @@ module.exports.createUser = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
-//login controller
+// login controller
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
@@ -95,32 +95,37 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      //creating token if credentials are correct
+      // creating token if credentials are correct
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
 
       res.send({
-        token: token,
+        token,
       });
     })
     .catch((err) => handleError(err, res));
 };
 
-//modifying user data
+// modifying user data
 module.exports.updateUserProfile = (req, res) => {
   const { name, avatar } = req.body;
 
   User.findById(req.user._id)
     .orFail(new Error("User not found"))
     .then((user) => {
-      user.name = name || user.name; //only if new data is given
-      user.avatar = avatar || user.avatar;
+      // creating a copy of the user opject
+      const updatedData = {
+        name: name || user.name,
+        avatar: avatar || user.avatar,
+      };
+      // Merging updated data into the user object
+      Object.assign(user, updatedData);
 
       return user.save({ runValidators: true });
     })
     .then((updatedUser) => {
-      //sending back the updated user data
+      // sending back the updated user data
       res.status(200).send({
         data: {
           _id: updatedUser._id,

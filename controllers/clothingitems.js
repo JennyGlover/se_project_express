@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingitems");
 const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST, FORBIDDEN } = require("../utils/errors");
+const { BAD_REQUEST, FORBIDDEN, NOT_FOUND } = require("../utils/errors");
 
 // controller that gets all clothing items
 module.exports.getItems = (req, res) => {
@@ -23,6 +23,9 @@ module.exports.getItems = (req, res) => {
 };
 
 module.exports.createItem = (req, res) => {
+  if (!req.user) {
+    return res.status(401).send({ message: "User not authenticated" });
+  }
   const { name, weather, imageUrl } = req.body;
 
   if (!name || !weather || !imageUrl) {
@@ -57,12 +60,12 @@ module.exports.deleteItem = (req, res) => {
 
   return ClothingItem.findById(itemId)
     .then((item) => {
-      //if the item does not exist, retun an error
+      // if the item does not exist, return an error
       if (!item) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
 
-      //Checking if user has permission to delete item
+      // Checking if user has permission to delete item
       if (item.owner.toString() !== currentUser.toString()) {
         return res
           .status(FORBIDDEN)
@@ -70,11 +73,11 @@ module.exports.deleteItem = (req, res) => {
       }
 
       // If ownership matches, delete the item
-      return item.remove();
+      return ClothingItem.findByIdAndDelete(itemId);
     })
-    .then(() => {
-      res.status(200).send({ message: "Clothing item deleted successfully" });
-    })
+    .then(() => res
+        .status(200)
+        .send({ message: "Clothing item deleted successfully" }))
     .catch((err) => handleError(err, res));
 };
 
