@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingitems");
 const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST } = require("../utils/errors");
+const { BAD_REQUEST, FORBIDDEN } = require("../utils/errors");
 
 // controller that gets all clothing items
 module.exports.getItems = (req, res) => {
@@ -48,14 +48,30 @@ module.exports.createItem = (req, res) => {
 /// controller that deletes an item
 module.exports.deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const currentUser = req.user._id;
 
   // Checking if id is valid
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res.status(BAD_REQUEST).send({ message: "Invalid itemId format" });
   }
 
-  return ClothingItem.findByIdAndDelete(itemId)
-    .orFail(new Error("Item not found"))
+  return ClothingItem.findById(itemId)
+    .then((item) => {
+      //if the item does not exist, retun an error
+      if (!item) {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+
+      //Checking if user has permission to delete item
+      if (item.owner.toString() !== currentUser.toString()) {
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "You do not have permission to delete this item" });
+      }
+
+      // If ownership matches, delete the item
+      return item.remove();
+    })
     .then(() => {
       res.status(200).send({ message: "Clothing item deleted successfully" });
     })

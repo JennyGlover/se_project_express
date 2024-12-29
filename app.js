@@ -3,24 +3,29 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const routes = require("./routes");
 const { NOT_FOUND } = require("./utils/errors");
-
+const authMiddleware = require("./middlewares/auth");
+const cors = require("cors");
 const app = express();
+
+app.use(cors());
 
 // Middleware to parse incoming JSON
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// authentication middleware
+//public routes that don't require authorization
+const publicRoutes = ["/signin", "/signup", "/items"];
+
+// Applying authMiddleware to all routes except public ones
 app.use((req, res, next) => {
-  req.user = {
-    _id: "6768c9d38124c7ff4574d1a0",
-  };
-  next();
+  if (publicRoutes.includes(req.path)) {
+    return next();
+  }
+  authMiddleware(req, res, next);
 });
 
 // Centralized routes
 app.use(routes);
-
 // Middleware for handling unknown route
 app.use((req, res) => {
   res.status(NOT_FOUND).send({ message: "Requested resource not found" });
