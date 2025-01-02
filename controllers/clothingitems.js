@@ -16,6 +16,7 @@ module.exports.getItems = (req, res) => {
           imageUrl: clothingItem.imageUrl,
           owner: clothingItem.owner,
           _id: clothingItem._id,
+          likes: clothingItem.likes,
         })),
       })
     )
@@ -25,8 +26,16 @@ module.exports.getItems = (req, res) => {
 module.exports.createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
-  if (!name || !weather || !imageUrl) {
-    return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
+  const missingFields = [];
+  if (!name) missingFields.push("name");
+  if (!weather) missingFields.push("weather");
+  if (!imageUrl) missingFields.push("imageUrl")
+
+  // If there are missing fields, return an error message
+  if (missingFields.length > 0) {
+    return res.status(400).send({
+      message: `Missing required field(s): ${missingFields.join(", ")}`
+    });
   }
 
   return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })

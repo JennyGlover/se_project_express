@@ -24,8 +24,18 @@ module.exports.getCurrentUser = (req, res) =>
 // Controller that creates a new user
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-  if (!name || !avatar || !email || !password) {
-    return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
+
+  const missingFields = [];
+  if (!name) missingFields.push("name");
+  if (!avatar) missingFields.push("avatar");
+  if (!email) missingFields.push("email");
+  if (!password) missingFields.push("password");
+
+  // If there are missing fields, return an error message
+  if (missingFields.length > 0) {
+    return res.status(400).send({
+      message: `Missing required field(s): ${missingFields.join(", ")}`
+    });
   }
 
   // Checking if email already exists
@@ -71,10 +81,16 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(BAD_REQUEST).send({ message: "Missing required fields" });
-  }
+  const missingFields = [];
+  if (!email) missingFields.push("email");
+  if (!password) missingFields.push("password");
 
+  // If there are missing fields, return an error message
+  if (missingFields.length > 0) {
+    return res.status(400).send({
+      message: `Missing required field(s): ${missingFields.join(", ")}`
+    });
+  }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // creating token if credentials are correct
