@@ -29,12 +29,12 @@ module.exports.createItem = (req, res) => {
   const missingFields = [];
   if (!name) missingFields.push("name");
   if (!weather) missingFields.push("weather");
-  if (!imageUrl) missingFields.push("imageUrl")
+  if (!imageUrl) missingFields.push("imageUrl");
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
     return res.status(400).send({
-      message: `Missing required field(s): ${missingFields.join(", ")}`
+      message: `Missing required field(s): ${missingFields.join(", ")}`,
     });
   }
 

@@ -34,7 +34,7 @@ module.exports.createUser = (req, res) => {
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
     return res.status(400).send({
-      message: `Missing required field(s): ${missingFields.join(", ")}`
+      message: `Missing required field(s): ${missingFields.join(", ")}`,
     });
   }
 
@@ -88,7 +88,7 @@ module.exports.login = (req, res) => {
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
     return res.status(400).send({
-      message: `Missing required field(s): ${missingFields.join(", ")}`
+      message: `Missing required field(s): ${missingFields.join(", ")}`,
     });
   }
   return User.findUserByCredentials(email, password)
