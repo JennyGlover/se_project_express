@@ -96,10 +96,15 @@ module.exports.login = (req, res) => {
       // creating token if credentials are correct
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
-      });
 
+      }
+      );
+      const { name, avatar, _id } = user;
       res.send({
         token,
+        name,
+        avatar,
+        _id,
       });
     })
     .catch((err) => handleError(err, res));
