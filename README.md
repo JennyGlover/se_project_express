@@ -36,4 +36,4 @@ The project enables the following functionalities:
 `npm run dev` — to launch the server with the hot reload feature
 
 **Link to Project FrontEnd**
-[**se_project_REACT**](https://github.com/JennyGlover/se_project_express](https://github.com/JennyGlover/se_project_react))
+[**se_project_REACT**](https://github.com/JennyGlover/se_project_react)
