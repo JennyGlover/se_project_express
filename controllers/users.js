@@ -2,11 +2,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/users");
 const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST } = require("../utils/errors");
+const { BAD_REQUEST } = require("../utils/statusCodes");
 const { JWT_SECRET } = require("../utils/config");
+const Errors = require("../utils/errors");
 
 // controller that gets user by id
-module.exports.getCurrentUser = (req, res) =>
+module.exports.getCurrentUser = (req, res) => {
   // Finding the user by ID in req.user object
   User.findById(req.user._id)
     .orFail(new Error("User not found"))
@@ -19,8 +20,8 @@ module.exports.getCurrentUser = (req, res) =>
         },
       });
     })
-    .catch((err) => handleError(err, res));
-
+    .catch(next);
+}
 // Controller that creates a new user
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -74,7 +75,7 @@ module.exports.createUser = (req, res) => {
           });
         });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 // login controller
@@ -107,7 +108,7 @@ module.exports.login = (req, res) => {
         _id,
       });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 // modifying user data
@@ -137,5 +138,5 @@ module.exports.updateUserProfile = (req, res) => {
         },
       });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const routes = require("./routes");
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -14,6 +15,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Centralized routes
 app.use(routes);
+
+//Error Handling
+app.use(errorHandler);
 
 // Database connection
 mongoose

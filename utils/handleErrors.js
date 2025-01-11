@@ -4,7 +4,7 @@ const {
   INTERNAL_SERVER_ERROR,
   UNAUTHORIZED,
   CONFLICT,
-} = require("./errors");
+} = require("./statusCodes");
 
 // Error handling utility function
 const handleError = (err, res) => {

@@ -24,5 +24,6 @@ module.exports = {
   rules: {
     // Allow _id variable names
     "no-underscore-dangle": ["error", { allow: ["_id"] }],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }]
   },
 };

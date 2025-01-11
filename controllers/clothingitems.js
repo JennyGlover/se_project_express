@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingitems");
 const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST, FORBIDDEN, NOT_FOUND } = require("../utils/errors");
+const Errors = require("../utils/errors");
 
 // controller that gets all clothing items
 module.exports.getItems = (req, res) => {
@@ -20,7 +20,7 @@ module.exports.getItems = (req, res) => {
         })),
       })
     )
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 module.exports.createItem = (req, res) => {
@@ -33,9 +33,7 @@ module.exports.createItem = (req, res) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    return res.status(400).send({
-      message: `Missing required field(s): ${missingFields.join(", ")}`,
-    });
+    throw new Errors.NotFoundError(`Missing required field(s): ${missingFields.join(", ")}`);
   }
 
   return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -51,7 +49,7 @@ module.exports.createItem = (req, res) => {
         },
       })
     )
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 /// controller that deletes an item
@@ -61,21 +59,19 @@ module.exports.deleteItem = (req, res) => {
 
   // Checking if id is valid
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid itemId format" });
+    throw new Errors.BadRequestError("Invalid itemId format");
   }
 
   return ClothingItem.findById(itemId)
     .then((item) => {
       // if the item does not exist, return an error
       if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
+        throw new Errors.NotFoundError("Item not found");
       }
 
       // Checking if user has permission to delete item
       if (item.owner.toString() !== currentUser.toString()) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "You do not have permission to delete this item" });
+        throw new Errors.ForbiddenError("You do not have permission to delete this item");
       }
 
       // If ownership matches, delete the item
@@ -83,7 +79,7 @@ module.exports.deleteItem = (req, res) => {
         res.status(200).send({ message: "Clothing item deleted successfully" })
       );
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 // controller that likes an item
@@ -92,7 +88,7 @@ module.exports.putLike = (req, res) => {
 
   // Checking if id is valid
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid itemId format" });
+    throw new Errors.BadRequestError("Invalid itemId format");
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -102,7 +98,7 @@ module.exports.putLike = (req, res) => {
     },
     { new: true }
   )
-    .orFail(new Error("Item not found"))
+    .orFail(new Errors.NotFoundError("Item not found"))
     .then((clothingItem) => {
       res.status(200).send({
         message: "Clothing item liked successfully",
@@ -116,7 +112,7 @@ module.exports.putLike = (req, res) => {
         },
       });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 // controller that dislikes an item
@@ -125,7 +121,7 @@ module.exports.deleteLike = (req, res) => {
 
   // Checking if id is valid
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(BAD_REQUEST).send({ message: "Invalid itemId format" });
+    throw new Errors.BadRequestError("Invalid itemId format");
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -133,7 +129,7 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(new Error("Item not found")) // Item not found error
+    .orFail(new Errors.NotFoundError("Item not found")) // Item not found error
     .then((clothingItem) => {
       res.status(200).send({
         message: "Clothing item disliked successfully",
@@ -147,5 +143,5 @@ module.exports.deleteLike = (req, res) => {
         },
       });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
