@@ -21,7 +21,7 @@ module.exports.getCurrentUser = (req, res) => {
       });
     })
     .catch(next);
-}
+};
 // Controller that creates a new user
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -34,18 +34,16 @@ module.exports.createUser = (req, res) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    return res.status(400).send({
-      message: `Missing required field(s): ${missingFields.join(", ")}`,
-    });
+    throw new Errors.BadRequestError(
+      `Missing required field(s): ${missingFields.join(", ")}`
+    );
   }
 
   // Checking if email already exists
   return User.findOne({ email })
     .then((user) => {
       if (user) {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Email already in use" });
+        throw new Errors.BadRequestError("Email already in use");
       }
 
       // Hashing the password after confirming the email is unique
@@ -88,18 +86,16 @@ module.exports.login = (req, res) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    return res.status(400).send({
-      message: `Missing required field(s): ${missingFields.join(", ")}`,
-    });
+    throw new Errors.BadRequestError(
+      `Missing required field(s): ${missingFields.join(", ")}`
+    );
   }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // creating token if credentials are correct
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
-
-      }
-      );
+      });
       const { name, avatar, _id } = user;
       res.send({
         token,
@@ -116,7 +112,7 @@ module.exports.updateUserProfile = (req, res) => {
   const { name, avatar } = req.body;
 
   User.findById(req.user._id)
-    .orFail(new Error("User not found"))
+    .orFail(new Errors.NotFoundError("User not found"))
     .then((user) => {
       // creating a copy of the user opject
       const updatedData = {

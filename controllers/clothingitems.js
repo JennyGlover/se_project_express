@@ -33,7 +33,9 @@ module.exports.createItem = (req, res) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    throw new Errors.NotFoundError(`Missing required field(s): ${missingFields.join(", ")}`);
+    throw new Errors.NotFoundError(
+      `Missing required field(s): ${missingFields.join(", ")}`
+    );
   }
 
   return ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -71,7 +73,9 @@ module.exports.deleteItem = (req, res) => {
 
       // Checking if user has permission to delete item
       if (item.owner.toString() !== currentUser.toString()) {
-        throw new Errors.ForbiddenError("You do not have permission to delete this item");
+        throw new Errors.ForbiddenError(
+          "You do not have permission to delete this item"
+        );
       }
 
       // If ownership matches, delete the item
