@@ -4,8 +4,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
-
+const { errors } = require ('celebrate');
 const app = express();
+const { requestLogger, errorLogger } = require('./middlewares/logger')
 
 app.use(cors());
 
@@ -13,8 +14,17 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//enabling request loggers
+app.use(requestLogger);
+
 // Centralized routes
 app.use(routes);
+
+//enabling error logger
+app.use(errorLogger);
+
+//celebrate error handler
+app.use(errors());
 
 //Error Handling
 app.use(errorHandler);
