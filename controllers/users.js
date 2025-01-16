@@ -77,7 +77,7 @@ module.exports.createUser = (req, res, next) => {
 };
 
 // login controller
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   const missingFields = [];
