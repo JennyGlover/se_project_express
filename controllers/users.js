@@ -86,10 +86,9 @@ module.exports.login = (req, res) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    throw new Errors.BadRequestError(
-      `Missing required field(s): ${missingFields.join(", ")}`
-    );
+    return next(new Errors.BadRequestError(`Missing required field(s): ${missingFields.join(", ")}`)); // Use next() instead of throw
   }
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // creating token if credentials are correct
