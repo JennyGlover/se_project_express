@@ -34,16 +34,16 @@ module.exports.createUser = (req, res, next) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    throw new Errors.BadRequestError(
+    return next(new Errors.BadRequestError(
       `Missing required field(s): ${missingFields.join(", ")}`
-    );
+    ));
   }
 
   // Checking if email already exists
   return User.findOne({ email })
     .then((user) => {
       if (user) {
-        throw new Errors.BadRequestError("Email already in use");
+        return next(new Errors.BadRequestError("Email already in use"));
       }
 
       // Hashing the password after confirming the email is unique
