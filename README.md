@@ -19,21 +19,25 @@ The project enables the following functionalities:
 - **Express.js**: To set up routing and middleware
 - **MongoDB**: As the database to store user and clothing item data
 - **Mongoose**: For interacting with the database
+- **Winston**: Logger library to track requests, errors, and general activity within the application
+- **JWT (JSON Web Tokens)**:For secure, stateless authentication.
 
 ### Techniques
 
-- **RESTful API**: Built using REST principles for clear and scalable endpoints
-- **User Authentication**: Secure handling of user credentials with techniques like hashing
-- **Error Handling**: Centralized middleware to manage errors and unknown routes
-- **Environment Management**: Using environment variables for configuration
-- **Security Best Practices**: Includes input validation and data sanitization
-- **Project Structure**: Modular structure with routes, controllers, and utility files
+- **RESTful API**: Developed with REST principles to ensure clean and scalable API routes.
+- **User Authentication**: Hashing passwords using bcrypt, and managing sessions with JWT.
+- **Error Handling Middleware**: Centralized error handling to ensure consistent responses for failed requests.
+- **Input Validation**: Using **Joi** and **Celebrate** for validating user input and preventing malicious data.
+- **PM2**: Process manager for keeping the application running and automatically restarting it upon failure.
+- **nginx**: Reverse proxy and load balancing for deployment.
+- **SSL Encryption**: For securing communications with an SSL certificate.
 
 ## Running the Project
 
 `npm run start` — to launch the server
-
 `npm run dev` — to launch the server with the hot reload feature
 
 **Link to Project FrontEnd**
 [**se_project_REACT**](https://github.com/JennyGlover/se_project_react)
+
+You can access the live application at [https://www.whattoweartoday.crabdance.com/](https://www.whattoweartoday.crabdance.com/)
