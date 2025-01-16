@@ -1,8 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/users");
-const handleError = require("../utils/handleErrors");
-const { BAD_REQUEST } = require("../utils/statusCodes");
 const { JWT_SECRET } = require("../utils/config");
 const Errors = require("../utils/errors");
 
@@ -34,9 +32,11 @@ module.exports.createUser = (req, res, next) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    return next(new Errors.BadRequestError(
-      `Missing required field(s): ${missingFields.join(", ")}`
-    ));
+    return next(
+      new Errors.BadRequestError(
+        `Missing required field(s): ${missingFields.join(", ")}`
+      )
+    );
   }
 
   // Checking if email already exists
@@ -86,7 +86,11 @@ module.exports.login = (req, res, next) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    return next(new Errors.BadRequestError(`Missing required field(s): ${missingFields.join(", ")}`)); // Use next() instead of throw
+    return next(
+      new Errors.BadRequestError(
+        `Missing required field(s): ${missingFields.join(", ")}`
+      )
+    ); // Use next() instead of throw
   }
 
   return User.findUserByCredentials(email, password)

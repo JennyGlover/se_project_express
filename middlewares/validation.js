@@ -1,20 +1,19 @@
-const { Joi, celebrate } = require('celebrate');
-const validator = require('validator');
-
+const { Joi, celebrate } = require("celebrate");
+const validator = require("validator");
 
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
     return value;
   }
-  return helpers.error('string.url');
-}
+  return helpers.error("string.url");
+};
 
 const validateEmail = (value, helpers) => {
   if (validator.isEmail(value)) {
     return value;
   }
-  return helpers.error('string.email');
-}
+  return helpers.error("string.email");
+};
 
 module.exports.validateClothingItems = celebrate({
   body: Joi.object().keys({
@@ -29,10 +28,9 @@ module.exports.validateClothingItems = celebrate({
     imageUrl: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.url": 'the "imageUrl" field must be a valid url',
-    })
-  })
-})
-
+    }),
+  }),
+});
 
 module.exports.userInfo = celebrate({
   body: Joi.object().keys({
@@ -54,9 +52,8 @@ module.exports.userInfo = celebrate({
     password: Joi.string().required().messages({
       "string.empty": 'The "password" field must be field in',
     }),
-  })
-})
-
+  }),
+});
 
 module.exports.updateUser = celebrate({
   body: Joi.object().keys({
@@ -69,10 +66,9 @@ module.exports.updateUser = celebrate({
     avatar: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "avatar" field must be filled in',
       "string.url": 'the "avatar" field must be a valid url',
-    })
-  })
-})
-
+    }),
+  }),
+});
 
 module.exports.login = celebrate({
   body: Joi.object().keys({
@@ -84,8 +80,8 @@ module.exports.login = celebrate({
     password: Joi.string().required().messages({
       "string.empty": 'The "password" field must be field in',
     }),
-  })
-})
+  }),
+});
 
 module.exports.id = celebrate({
   params: Joi.object().keys({
@@ -93,6 +89,5 @@ module.exports.id = celebrate({
       "string.length": 'The "id" must be 24 characters long',
       "string.alphanum": 'The "id" consisting only of letters and digits',
     }),
-  })
-})
-
+  }),
+});

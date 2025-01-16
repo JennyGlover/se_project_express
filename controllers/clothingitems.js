@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingitems");
-const handleError = require("../utils/handleErrors");
 const Errors = require("../utils/errors");
 
 // controller that gets all clothing items
@@ -33,8 +32,10 @@ module.exports.createItem = (req, res, next) => {
 
   // If there are missing fields, return an error message
   if (missingFields.length > 0) {
-    throw new Errors.NotFoundError(
-      `Missing required field(s): ${missingFields.join(", ")}`
+    return next(
+      new Errors.NotFoundError(
+        `Missing required field(s): ${missingFields.join(", ")}`
+      )
     );
   }
 

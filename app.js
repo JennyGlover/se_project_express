@@ -2,13 +2,14 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { errors } = require("celebrate");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
-const { errors } = require('celebrate');
-const app = express();
-const { requestLogger, errorLogger } = require('./middlewares/logger')
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-require('dotenv').config;
+require("dotenv").config();
+
+const app = express();
 
 app.use(cors());
 
@@ -16,26 +17,26 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//enabling request loggers
+// enabling request loggers
 app.use(requestLogger);
 
-//Server crash test
-app.get('/crash-test', () => {
+// Server crash test
+app.get("/crash-test", () => {
   setTimeout(() => {
-    throw new Error('Server will crash now');
+    throw new Error("Server will crash now");
   }, 0);
 });
 
 // Centralized routes
 app.use(routes);
 
-//enabling error logger
+// enabling error logger
 app.use(errorLogger);
 
-//celebrate error handler
+// celebrate error handler
 app.use(errors());
 
-//Error Handling
+// Error Handling
 app.use(errorHandler);
 
 // Database connection

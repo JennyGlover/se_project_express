@@ -13,6 +13,11 @@ const {
 router.post("/signin", validation.login, login);
 router.post("/signup", validation.userInfo, createUser);
 router.get("/users/me", authMiddleware, getCurrentUser);
-router.patch("/users/me", authMiddleware, validation.updateUser, updateUserProfile);
+router.patch(
+  "/users/me",
+  authMiddleware,
+  validation.updateUser,
+  updateUserProfile
+);
 
 module.exports = router;
