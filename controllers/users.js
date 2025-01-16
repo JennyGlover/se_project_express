@@ -7,7 +7,7 @@ const { JWT_SECRET } = require("../utils/config");
 const Errors = require("../utils/errors");
 
 // controller that gets user by id
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   // Finding the user by ID in req.user object
   User.findById(req.user._id)
     .orFail(new Error("User not found"))
@@ -23,7 +23,7 @@ module.exports.getCurrentUser = (req, res) => {
     .catch(next);
 };
 // Controller that creates a new user
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   const missingFields = [];
@@ -108,7 +108,7 @@ module.exports.login = (req, res) => {
 };
 
 // modifying user data
-module.exports.updateUserProfile = (req, res) => {
+module.exports.updateUserProfile = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findById(req.user._id)

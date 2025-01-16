@@ -4,7 +4,7 @@ const handleError = require("../utils/handleErrors");
 const Errors = require("../utils/errors");
 
 // controller that gets all clothing items
-module.exports.getItems = (req, res) => {
+module.exports.getItems = (req, res, next) => {
   ClothingItem.find({})
     .populate("owner")
     .then((clothingItems) =>
@@ -23,7 +23,7 @@ module.exports.getItems = (req, res) => {
     .catch(next);
 };
 
-module.exports.createItem = (req, res) => {
+module.exports.createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   const missingFields = [];
@@ -55,7 +55,7 @@ module.exports.createItem = (req, res) => {
 };
 
 /// controller that deletes an item
-module.exports.deleteItem = (req, res) => {
+module.exports.deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const currentUser = req.user._id;
 
@@ -87,7 +87,7 @@ module.exports.deleteItem = (req, res) => {
 };
 
 // controller that likes an item
-module.exports.putLike = (req, res) => {
+module.exports.putLike = (req, res, next) => {
   const { itemId } = req.params;
 
   // Checking if id is valid
@@ -120,7 +120,7 @@ module.exports.putLike = (req, res) => {
 };
 
 // controller that dislikes an item
-module.exports.deleteLike = (req, res) => {
+module.exports.deleteLike = (req, res, next) => {
   const { itemId } = req.params;
 
   // Checking if id is valid
