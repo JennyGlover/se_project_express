@@ -13,7 +13,7 @@ const messageFormat = winston.format.combine(
 
 //Creating a request logger
 const requestLogger = expressWinston.logger({
-  transport: [
+  transports: [
     new winston.transports.Console({
       format: messageFormat
     }),
@@ -25,9 +25,9 @@ const requestLogger = expressWinston.logger({
 });
 
 //error logger
-const errorLogger = expressWinstonW.errorLogger({
+const errorLogger = expressWinston.errorLogger({
   transports: [
-    new winston.transports.file({ filename: 'error.log' }),
+    new winston.transports.File({ filename: 'error.log' }),
   ],
   format: winston.format.json(),
 });
