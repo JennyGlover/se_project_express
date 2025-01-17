@@ -1,3 +1,5 @@
+require("dotenv").config(); // Load environment variables before anything else
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -6,8 +8,6 @@ const { errors } = require("celebrate");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-
-require("dotenv").config();
 
 const app = express();
 

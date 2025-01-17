@@ -43,7 +43,7 @@ module.exports.createUser = (req, res, next) => {
   return User.findOne({ email })
     .then((user) => {
       if (user) {
-        return next(new Errors.BadRequestError("Email already in use"));
+        return next(new Errors.ConflictError("Email already in use"));
       }
 
       // Hashing the password after confirming the email is unique
